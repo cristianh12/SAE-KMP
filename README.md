@@ -3,7 +3,7 @@
 Microproyecto de **Kotlin Multiplatform** realizado en Android Studio para **Android + Desktop (JVM/Windows)**.
 El proyecto se basa en el concepto de SAE y comparte el código de la interfaz mediante **Compose Multiplatform**.
 
-## Estado de esta entrega: etapa 1, base visual
+## Estado de esta entrega: etapa 1 + calendario navegable
 
 - [x] Plantilla Android / Desktop e inicialización de Git.
 - [x] Logo SAE oficial en `shared/src/commonMain/composeResources/drawable/sae_logo.png`.
@@ -11,7 +11,8 @@ El proyecto se basa en el concepto de SAE y comparte el código de la interfaz m
 - [x] Tema visual compartido.
 - [x] Bienvenida, Dashboard inicial y Acerca de SAE.
 - [x] Navegación de esas tres pantallas en `commonMain`.
-- [ ] Calendario y recordatorios con persistencia.
+- [x] Calendario mensual navegable, selección de fecha y regreso a hoy (sin eventos simulados).
+- [ ] Crear y consultar eventos académicos con persistencia (integración con repositorio de etapa 2).
 - [ ] Materias, notas y trabajos con persistencia.
 - [ ] Bienestar con persistencia.
 - [ ] Biblioteca de telemática conectada a una API.
@@ -36,6 +37,9 @@ shared/
       ui/screens/WelcomeScreen.kt
       ui/screens/DashboardScreen.kt
       ui/screens/AboutScreen.kt
+      ui/screens/CalendarScreen.kt
+      calendar/CalendarDate.kt
+      calendar/Today.kt
       ui/theme/SaeTheme.kt
 docs/              Plan de las tres etapas y comprobaciones
 ```
