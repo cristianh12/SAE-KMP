@@ -1,30 +1,73 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM).
+# SAE-KMP — Sistema de Acompañamiento Estudiantil
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Microproyecto de **Kotlin Multiplatform** realizado en Android Studio para **Android + Desktop (JVM/Windows)**.
+El proyecto se basa en el concepto de SAE y comparte el código de la interfaz mediante **Compose Multiplatform**.
 
-### Running the apps
+## Estado de esta entrega: etapa 1, base visual
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+- [x] Plantilla Android / Desktop e inicialización de Git.
+- [x] Logo SAE oficial en `shared/src/commonMain/composeResources/drawable/sae_logo.png`.
+- [x] Configuración de la clase generada `Res` para cargar el logo.
+- [x] Tema visual compartido.
+- [x] Bienvenida, Dashboard inicial y Acerca de SAE.
+- [x] Navegación de esas tres pantallas en `commonMain`.
+- [ ] Calendario y recordatorios con persistencia.
+- [ ] Materias, notas y trabajos con persistencia.
+- [ ] Bienestar con persistencia.
+- [ ] Biblioteca de telemática conectada a una API.
+- [ ] Validación final de funcionalidades en las dos plataformas.
 
-- Android app: `./gradlew :androidApp:assembleDebug`
-- Desktop app:
-  - Hot reload: `./gradlew :desktopApp:hotRun --auto`
-  - Standard run: `./gradlew :desktopApp:run`
+**Los datos académicos no están simulados**: el Dashboard presenta información de estado
+mientras aún no hay repositorios que permitan obtener datos reales. En etapas posteriores
+se mostrará exclusivamente información registrada por el usuario o recibida de la API.
 
-### Running tests
+## Carpetas
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+```text
+androidApp/        Entrada Android y recursos específicos del sistema
+desktopApp/        Entrada Windows Desktop (JVM)
+shared/
+  src/commonMain/
+    composeResources/drawable/sae_logo.png
+    kotlin/com/sae/multiplatform/
+      App.kt
+      navigation/SaeScreen.kt
+      navigation/SaeNavigationHost.kt
+      ui/screens/WelcomeScreen.kt
+      ui/screens/DashboardScreen.kt
+      ui/screens/AboutScreen.kt
+      ui/theme/SaeTheme.kt
+docs/              Plan de las tres etapas y comprobaciones
+```
 
-- Android tests: `./gradlew :shared:testAndroidHostTest`
-- Desktop tests: `./gradlew :shared:jvmTest`
+## Requisitos
 
----
+Android Studio con soporte para KMP, JDK compatible con la plantilla (JDK 21),
+Android SDK y conexión a Internet la primera vez para descargar las dependencias.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+En PowerShell, desde la raíz del proyecto:
+
+```powershell
+.\gradlew.bat :shared:compileKotlinJvm
+.\gradlew.bat :desktopApp:run
+.\gradlew.bat :androidApp:assembleDebug
+```
+
+La ventana de Desktop se cierra para finalizar `:desktopApp:run`.
+Para Android también puedes elegir `androidApp` y un emulador desde Android Studio.
+
+Si la IDE todavía marca el import `com.sae.multiplatform.resources.Res`, pulsa
+**Sync Project with Gradle Files** y compila de nuevo. La clase `Res` se genera
+automáticamente a partir de `shared/build.gradle.kts` y los recursos de `composeResources`.
+
+## Git / trabajo colaborativo
+
+- Rama base: `main`.
+- Primera etapa: `feature/cristian-hoyos`.
+- Las otras etapas deben desarrollarse en ramas individuales nuevas, partiendo de `main`
+  después de integrar la anterior mediante Pull Request.
+- Registrar cambios reales y verificables. No subir `.gradle`, `build`, `.idea`,
+  `local.properties` ni credenciales.
+
+Ver [docs/PLAN_ETAPAS.md](docs/PLAN_ETAPAS.md) y
+[docs/PRUEBAS_ETAPA_1.md](docs/PRUEBAS_ETAPA_1.md).

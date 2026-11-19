@@ -55,3 +55,10 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+
+// El logo y los demás recursos de Compose se comparten entre Android y Desktop.
+// Debe coincidir con los imports de WelcomeScreen y AboutScreen.
+compose.resources {
+    packageOfResClass = "com.sae.multiplatform.resources"
+    generateResClass = always
+}
