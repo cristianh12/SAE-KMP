@@ -4,8 +4,8 @@
 - Configurar Git y el proyecto Android + Desktop.
 - Integrar la marca SAE, el tema, la estructura visual y la navegación compartida.
 - Entregar Bienvenida, Dashboard inicial y Acerca de.
-- Implementar después el calendario interactivo y definir contratos de persistencia
-  en coordinación con la etapa 2 (no se han implementado en este paquete).
+- Implementar calendario interactivo mensual con selección de fechas, disponible en Android y Desktop.
+- Coordinar eventos académicos persistentes con la etapa 2 (todavía no implementados).
 
 ## Etapa 2 — Integrante 2 (rama individual)
 - Integrar SQLDelight/SQLite; repositorios y operaciones reales.
