@@ -14,6 +14,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sae.multiplatform.ui.screens.*
 import com.sae.multiplatform.ui.theme.*
+import com.sae.multiplatform.data.remote.SupabaseProvider
+import com.sae.multiplatform.data.repository.AuthRepository
+import kotlinx.coroutines.launch
+import com.sae.multiplatform.data.remote.SupabaseLocalConfig
+import com.sae.multiplatform.data.repository.PerfilRepository
+import com.sae.multiplatform.data.repository.PerfilUsuario
+import io.github.jan.supabase.SupabaseClient
 
 private data class NavItem(val screen: SaeScreen, val icon: String, val label: String)
 private val tabs = listOf(
@@ -27,10 +34,87 @@ private val tabs = listOf(
 @Composable
 fun SaeNavigationHost() {
     var screen by remember { mutableStateOf(SaeScreen.WELCOME) }
+    val scope = rememberCoroutineScope()
+
+
+    val cliente = remember {
+        SupabaseProvider.crearCliente(
+            projectUrl = "https://voxctlzffrkypkthmblv.supabase.co",
+            publishableKey = SupabaseLocalConfig.PUBLISHABLE_KEY
+        )
+    }
+
+    val authRepository = remember(cliente) {
+        AuthRepository(cliente)
+    }
+
+    val perfilRepository = remember(cliente) {
+        PerfilRepository(cliente)
+    }
+
+    var perfilActual by remember {
+        mutableStateOf<PerfilUsuario?>(null)
+    }
+
+
+    var cargandoLogin by remember { mutableStateOf(false) }
+    var errorLogin by remember { mutableStateOf<String?>(null) }
     if (screen == SaeScreen.WELCOME) {
-        WelcomeScreen(onEnter = { screen = SaeScreen.DASHBOARD })
+        WelcomeScreen(onEnter = { screen = SaeScreen.LOGIN })
         return
     }
+
+    if (screen == SaeScreen.LOGIN) {
+        LoginScreen(
+            onLogin = { correo, contrasena ->
+                if (!cargandoLogin) {
+                    cargandoLogin = true
+                    errorLogin = null
+
+                    scope.launch {
+                        try {
+                            authRepository.iniciarSesion(
+                                correo = correo,
+                                contrasena = contrasena
+                            )
+
+                            val usuario = authRepository.usuarioAutenticado()
+
+                            if (usuario != null) {
+                                val perfil = perfilRepository.obtenerMiPerfil()
+
+                                if (perfil.rol == "docente" ||
+                                    perfil.rol == "estudiante"
+                                ) {
+                                    perfilActual = perfil
+                                    screen = SaeScreen.DASHBOARD
+                                } else {
+                                    errorLogin = "Tu cuenta no tiene un rol válido"
+                                    authRepository.cerrarSesion()
+                                }
+                            } else {
+                                errorLogin = "No se pudo confirmar la sesión"
+                            }
+                        } catch (e: Exception) {
+                            errorLogin =
+                                "No se pudo iniciar sesión o consultar el perfil."
+                        } finally {
+                            cargandoLogin = false
+                        }
+                    }
+                }
+            },
+            onBack = {
+                errorLogin = null
+                screen = SaeScreen.WELCOME
+            },
+            errorMessage = errorLogin,
+            isLoading = cargandoLogin
+        )
+        return
+    }
+
+
     BoxWithConstraints(Modifier.fillMaxSize().background(SaeBackground)) {
         val isWide = maxWidth >= 840.dp
         val currentTab = if (screen == SaeScreen.ABOUT) SaeScreen.PROFILE else screen
@@ -51,21 +135,59 @@ fun SaeNavigationHost() {
                         color = SaeMuted, modifier = Modifier.padding(12.dp))
                 }
                 Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
-                    ScreenContent(screen,
+
+                    ScreenContent(
+                        screen,
+                        cliente = cliente, // ← AGREGA ESTA LÍNEA
+                        perfil = perfilActual,
+                        correo = authRepository.usuarioAutenticado()?.email,
                         onCalendar = { screen = SaeScreen.CALENDAR },
                         onAbout = { screen = SaeScreen.ABOUT },
                         onBack = { screen = SaeScreen.PROFILE },
-                        onExit = { screen = SaeScreen.WELCOME })
+                        onExit = {
+                            scope.launch {
+                                try {
+                                    authRepository.cerrarSesion()
+                                    perfilActual = null
+                                    errorLogin = null
+                                    screen = SaeScreen.WELCOME
+                                } catch (e: Exception) {
+                                    errorLogin = "No se pudo cerrar la sesión"
+                                }
+                            }
+                        }
+                    )
+
+
                 }
             }
         } else {
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
-                    ScreenContent(screen,
+
+                    ScreenContent(
+                        screen,
+                        cliente = cliente, // ← AGREGA ESTA LÍNEA
+                        perfil = perfilActual,
+                        correo = authRepository.usuarioAutenticado()?.email,
                         onCalendar = { screen = SaeScreen.CALENDAR },
                         onAbout = { screen = SaeScreen.ABOUT },
                         onBack = { screen = SaeScreen.PROFILE },
-                        onExit = { screen = SaeScreen.WELCOME })
+                        onExit = {
+                            scope.launch {
+                                try {
+                                    authRepository.cerrarSesion()
+                                    perfilActual = null
+                                    errorLogin = null
+                                    screen = SaeScreen.WELCOME
+                                } catch (e: Exception) {
+                                    errorLogin = "No se pudo cerrar la sesión"
+                                }
+                            }
+                        }
+                    )
+
+
                 }
                 Row(
                     Modifier.fillMaxWidth().background(Color.White)
@@ -106,23 +228,38 @@ private fun NavEntry(item: NavItem, selected: Boolean, wide: Boolean, onClick: (
     }
 }
 
+
+
 @Composable
 private fun ScreenContent(
     screen: SaeScreen,
+    cliente: SupabaseClient,
+    perfil: PerfilUsuario?,
+    correo: String?,
     onCalendar: () -> Unit,
     onAbout: () -> Unit,
     onBack: () -> Unit,
     onExit: () -> Unit
 ) {
+
     when (screen) {
         SaeScreen.DASHBOARD -> DashboardScreen(onCalendar, onAbout, onExit)
         SaeScreen.CALENDAR -> CalendarScreen(onBack)
-        SaeScreen.SUBJECTS -> PendingSection("Mis materias", "◈",
-            "Aquí aparecerán las materias y calificaciones que registres cuando se conecte el módulo de datos.")
+        SaeScreen.SUBJECTS -> MateriasScreen(
+            cliente = cliente,
+            perfil = perfil
+        )
         SaeScreen.RESOURCES -> PendingSection("Biblioteca", "▥",
             "Tu biblioteca está vacía. Los archivos y la búsqueda bibliográfica se integrarán con el módulo de Recursos.")
-        SaeScreen.PROFILE -> ProfileSection(onAbout, onExit)
+
+        SaeScreen.PROFILE -> ProfileSection(
+            perfil = perfil,
+            correo = correo,
+            onAbout = onAbout,
+            onExit = onExit
+        )
+
         SaeScreen.ABOUT -> AboutScreen(onBack)
-        SaeScreen.WELCOME -> Unit
+        SaeScreen.WELCOME, SaeScreen.LOGIN -> Unit
     }
 }

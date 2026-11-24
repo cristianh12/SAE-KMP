@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sae.multiplatform.ui.theme.*
+import com.sae.multiplatform.data.repository.PerfilUsuario
 
 @Composable
 fun PageFrame(content: @Composable ColumnScope.() -> Unit) {
@@ -53,19 +54,118 @@ fun PendingSection(title: String, icon: String, description: String) {
     }
 }
 
+
 @Composable
-fun ProfileSection(onAbout: () -> Unit, onExit: () -> Unit) {
+fun ProfileSection(
+    perfil: PerfilUsuario?,
+    correo: String?,
+    onAbout: () -> Unit,
+    onExit: () -> Unit
+) {
     PageFrame {
-        Text("Perfil", fontSize = 27.sp, fontWeight = FontWeight.Bold, color = SaeNavy)
+        Text(
+            text = "Mi perfil",
+            fontSize = 27.sp,
+            fontWeight = FontWeight.Bold,
+            color = SaeNavy
+        )
+
         Spacer(Modifier.height(20.dp))
+
         SaePanel(Modifier.fillMaxWidth()) {
-            Text("Perfil estudiantil", fontWeight = FontWeight.Bold, color = SaeNavy)
+
+            val nombreRol = when (perfil?.rol) {
+                "docente" -> "Docente"
+                "estudiante" -> "Estudiante"
+                else -> "Sin rol asignado"
+            }
+
+            Text(
+                text = "Información personal",
+                fontWeight = FontWeight.Bold,
+                color = SaeNavy,
+                fontSize = 20.sp
+            )
+
+            Spacer(Modifier.height(18.dp))
+
+            Text(
+                text = "Nombre",
+                fontWeight = FontWeight.SemiBold,
+                color = SaeNavy
+            )
+            Text(
+                text = perfil?.nombre
+                    ?.takeIf { it.isNotBlank() }
+                    ?: "Sin registrar",
+                color = SaeMuted
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                text = "Correo institucional",
+                fontWeight = FontWeight.SemiBold,
+                color = SaeNavy
+            )
+            Text(
+                text = correo ?: "No disponible",
+                color = SaeMuted
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                text = "Rol",
+                fontWeight = FontWeight.SemiBold,
+                color = SaeNavy
+            )
+            Text(
+                text = nombreRol,
+                color = SaePurple,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (perfil?.rol == "estudiante") {
+                Spacer(Modifier.height(14.dp))
+
+                Text(
+                    text = "Programa académico",
+                    fontWeight = FontWeight.SemiBold,
+                    color = SaeNavy
+                )
+                Text(
+                    text = perfil.programa
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Sin registrar",
+                    color = SaeMuted
+                )
+
+                Spacer(Modifier.height(14.dp))
+
+                Text(
+                    text = "Semestre",
+                    fontWeight = FontWeight.SemiBold,
+                    color = SaeNavy
+                )
+                Text(
+                    text = perfil.semestre?.toString()
+                        ?: "Sin registrar",
+                    color = SaeMuted
+                )
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Button(onClick = onAbout) {
+                Text("Acerca de SAE y créditos")
+            }
+
             Spacer(Modifier.height(8.dp))
-            Text("Los datos personales se mostrarán al integrar el perfil persistente.", color = SaeMuted)
-            Spacer(Modifier.height(20.dp))
-            Button(onClick = onAbout) { Text("Acerca de SAE y créditos") }
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(onClick = onExit) { Text("Salir de SAE") }
+
+            OutlinedButton(onClick = onExit) {
+                Text("Cerrar sesión")
+            }
         }
     }
 }

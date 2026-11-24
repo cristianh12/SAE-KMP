@@ -1,4 +1,14 @@
+
 package com.sae.multiplatform.navigation
 
-/** Apartados originales del TabView de SAE iOS, más la entrada y los créditos. */
-enum class SaeScreen { WELCOME, DASHBOARD, SUBJECTS, CALENDAR, RESOURCES, PROFILE, ABOUT }
+/** Pantallas de SAE compartidas entre Android y Desktop. */
+enum class SaeScreen {
+    WELCOME,
+    LOGIN,
+    DASHBOARD,
+    SUBJECTS,
+    CALENDAR,
+    RESOURCES,
+    PROFILE,
+    ABOUT
+}
