@@ -30,19 +30,30 @@ kotlin {
     }
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.compose.uiTooling)
-        }
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-        }
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.uiTooling)
+
+    // Motor HTTP para Android
+    implementation(libs.ktor.client.okhttp)
+}
+     jvmMain.dependencies {
+    // Motor HTTP para Desktop
+    implementation(libs.ktor.client.cio)
+}
+commonMain.dependencies {
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.components.resources)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.lifecycle.viewmodelCompose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+
+    // Supabase compartido entre Android y Desktop
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.postgrest)
+}
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
