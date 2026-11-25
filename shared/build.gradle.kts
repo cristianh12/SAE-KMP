@@ -53,6 +53,13 @@ commonMain.dependencies {
     // Supabase compartido entre Android y Desktop
     implementation(libs.supabase.auth)
     implementation(libs.supabase.postgrest)
+    // Cliente HTTP para Open Library
+    implementation(libs.ktor.client.core)
+    // Carga de portadas de libros
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
+    // Persistencia local de favoritos y bienestar
+    implementation(libs.multiplatform.settings)
 }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

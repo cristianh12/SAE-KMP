@@ -1,77 +1,178 @@
+
 # SAE-KMP — Sistema de Acompañamiento Estudiantil
 
-Microproyecto de **Kotlin Multiplatform** realizado en Android Studio para **Android + Desktop (JVM/Windows)**.
-El proyecto se basa en el concepto de SAE y comparte el código de la interfaz mediante **Compose Multiplatform**.
+Proyecto académico desarrollado con Kotlin Multiplatform y
+Compose Multiplatform en Android Studio, dirigido a las plataformas
+Android y Desktop (JVM/Windows).
 
-## Estado de esta entrega: etapa 1 + calendario navegable
+SAE tiene como objetivo facilitar la organización académica,
+el acceso a recursos educativos y el bienestar estudiantil
+desde una misma aplicación.
 
-- [x] Plantilla Android / Desktop e inicialización de Git.
-- [x] Logo SAE oficial en `shared/src/commonMain/composeResources/drawable/sae_logo.png`.
-- [x] Configuración de la clase generada `Res` para cargar el logo.
-- [x] Tema visual compartido.
-- [x] Bienvenida, Dashboard inicial y Acerca de SAE.
-- [x] Navegación de esas tres pantallas en `commonMain`.
-- [x] Calendario mensual navegable, selección de fecha y regreso a hoy (sin eventos simulados).
-- [ ] Crear y consultar eventos académicos con persistencia (integración con repositorio de etapa 2).
-- [ ] Materias, notas y trabajos con persistencia.
-- [ ] Bienestar con persistencia.
-- [ ] Biblioteca de telemática conectada a una API.
-- [ ] Validación final de funcionalidades en las dos plataformas.
+## Funcionalidades implementadas
 
-**Los datos académicos no están simulados**: el Dashboard presenta información de estado
-mientras aún no hay repositorios que permitan obtener datos reales. En etapas posteriores
-se mostrará exclusivamente información registrada por el usuario o recibida de la API.
+### Organización académica
 
-## Carpetas
+- Pantalla de bienvenida e inicio de sesión.
+- Dashboard estudiantil.
+- Calendario mensual interactivo.
+- Autenticación mediante Supabase.
+- Perfiles de estudiantes y docentes.
+- Gestión de materias, cursos y matrículas.
+- Gestión de evaluaciones y calificaciones.
+- Navegación adaptable para Android y Desktop.
+
+### Biblioteca tecnológica
+
+- Integración con la API pública de Open Library.
+- Búsqueda de libros por título, autor o temática.
+- Consulta de títulos, autores y años de publicación.
+- Visualización de portadas mediante Coil.
+- Acceso a las fichas originales de Open Library.
+- Guardado y eliminación de libros favoritos.
+- Persistencia local de favoritos por usuario.
+
+### Bienestar estudiantil
+
+- Registro del estado de ánimo.
+- Registro del nivel de estrés.
+- Registro de horas de sueño.
+- Registro de la carga académica.
+- Recomendaciones generales según las respuestas.
+- Consulta del historial de bienestar.
+- Eliminación individual y completa de registros.
+- Persistencia local por usuario.
+
+Las recomendaciones de bienestar son orientativas y no
+reemplazan la atención de un profesional de la salud.
+
+## Tecnologías utilizadas
+
+| Tecnología | Función |
+|---|---|
+| Kotlin Multiplatform | Código compartido entre plataformas |
+| Compose Multiplatform | Desarrollo de interfaces gráficas |
+| Supabase | Autenticación y gestión de datos académicos |
+| PostgreSQL | Base de datos de Supabase |
+| Ktor | Comunicación mediante peticiones HTTP |
+| Open Library API | Consulta de información bibliográfica |
+| Coil | Carga de imágenes y portadas |
+| Multiplatform Settings | Persistencia local |
+| Git y GitHub | Control de versiones y colaboración |
+| Gradle | Gestión de dependencias y compilación |
+
+## Estructura del proyecto
 
 ```text
-androidApp/        Entrada Android y recursos específicos del sistema
-desktopApp/        Entrada Windows Desktop (JVM)
+androidApp/
+desktopApp/
 shared/
   src/commonMain/
-    composeResources/drawable/sae_logo.png
+    composeResources/
     kotlin/com/sae/multiplatform/
-      App.kt
-      navigation/SaeScreen.kt
-      navigation/SaeNavigationHost.kt
-      ui/screens/WelcomeScreen.kt
-      ui/screens/DashboardScreen.kt
-      ui/screens/AboutScreen.kt
-      ui/screens/CalendarScreen.kt
-      calendar/CalendarDate.kt
-      calendar/Today.kt
-      ui/theme/SaeTheme.kt
-docs/              Plan de las tres etapas y comprobaciones
+      data/
+        remote/
+        repository/
+      navigation/
+      calendar/
+      ui/
+        screens/
+        theme/
+gradle/
+docs/
 ```
 
 ## Requisitos
 
-Android Studio con soporte para KMP, JDK compatible con la plantilla (JDK 21),
-Android SDK y conexión a Internet la primera vez para descargar las dependencias.
+- Android Studio con soporte para Kotlin Multiplatform.
+- JDK 21.
+- Android SDK.
+- Conexión a Internet.
+- Proyecto de Supabase configurado.
+- Archivo local de configuración de Supabase.
 
-En PowerShell, desde la raíz del proyecto:
+La configuración de Supabase debe realizarse siguiendo
+las instrucciones de docs/PASO_01_SUPABASE.md.
+
+No se deben subir credenciales privadas al repositorio.
+
+## Compilación y ejecución
+
+Desde PowerShell, en la raíz del proyecto:
+
+### Compilar el módulo compartido
 
 ```powershell
 .\gradlew.bat :shared:compileKotlinJvm
+```
+
+### Ejecutar Desktop
+
+```powershell
 .\gradlew.bat :desktopApp:run
+```
+
+### Compilar Android
+
+```powershell
 .\gradlew.bat :androidApp:assembleDebug
 ```
 
-La ventana de Desktop se cierra para finalizar `:desktopApp:run`.
-Para Android también puedes elegir `androidApp` y un emulador desde Android Studio.
+### Compilar Desktop
 
-Si la IDE todavía marca el import `com.sae.multiplatform.resources.Res`, pulsa
-**Sync Project with Gradle Files** y compila de nuevo. La clase `Res` se genera
-automáticamente a partir de `shared/build.gradle.kts` y los recursos de `composeResources`.
+```powershell
+.\gradlew.bat :desktopApp:compileKotlin
+```
 
-## Git / trabajo colaborativo
+Para ejecutar Android también se puede seleccionar androidApp
+y un emulador desde Android Studio.
 
-- Rama base: `main`.
-- Primera etapa: `feature/cristian-hoyos`.
-- Las otras etapas deben desarrollarse en ramas individuales nuevas, partiendo de `main`
-  después de integrar la anterior mediante Pull Request.
-- Registrar cambios reales y verificables. No subir `.gradle`, `build`, `.idea`,
-  `local.properties` ni credenciales.
+## Equipo del proyecto
 
-Ver [docs/PLAN_ETAPAS.md](docs/PLAN_ETAPAS.md) y
-[docs/PRUEBAS_ETAPA_1.md](docs/PRUEBAS_ETAPA_1.md).
+| Integrante | Responsabilidad |
+|---|---|
+| Cristian Hoyos | Arquitectura, diseño, navegación, Dashboard y calendario |
+| Daniel Mañunga | Supabase, autenticación y gestión académica |
+| Juan Guerrero | Biblioteca tecnológica, bienestar y persistencia local |
+
+## Trabajo colaborativo
+
+- Rama principal: main.
+- Etapa 1: feature/cristian-hoyos.
+- Etapa 2: feature/daniel-manunga.
+- Etapa 3: feature/juanmi.
+
+Los cambios se desarrollan en ramas individuales y se integran
+mediante Pull Requests.
+
+No se deben subir archivos de compilación, configuraciones
+locales ni credenciales privadas.
+
+## Estado de validación
+
+- [x] Compilación del módulo compartido.
+- [x] Compilación Android.
+- [x] Compilación Desktop.
+- [x] Implementación de la biblioteca tecnológica.
+- [x] Implementación del módulo de bienestar.
+- [x] Actualización de créditos.
+- [x] Exclusión de SupabaseLocalConfig.kt del repositorio.
+- [ ] Validación funcional completa en Android y Desktop.
+- [ ] Confirmación de persistencia después de reiniciar.
+- [ ] Verificación integral de eventos académicos persistentes.
+
+Los favoritos y registros de bienestar se almacenan localmente
+por usuario y dispositivo. No se sincronizan entre plataformas
+y su almacenamiento no está cifrado por la aplicación.
+
+La compilación exitosa no sustituye las pruebas funcionales.
+
+## Documentación
+
+- [Plan de etapas](docs/PLAN_ETAPAS.md)
+- [Configuración de Supabase](docs/PASO_01_SUPABASE.md)
+- [Pruebas de la etapa 1](docs/PRUEBAS_ETAPA_1.md)
+- [Pruebas del calendario](docs/PRUEBAS_CALENDARIO.md)
+- [Pruebas de la etapa 3](docs/PRUEBAS_ETAPA_3.md)
+
+Proyecto académico — 2026.

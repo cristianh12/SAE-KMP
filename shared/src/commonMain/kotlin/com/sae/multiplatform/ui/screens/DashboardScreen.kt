@@ -11,7 +11,12 @@ import androidx.compose.ui.unit.sp
 import com.sae.multiplatform.ui.theme.*
 
 @Composable
-fun DashboardScreen(onCalendar: () -> Unit, onAbout: () -> Unit, onExit: () -> Unit) {
+fun DashboardScreen(
+    onCalendar: () -> Unit,
+    onAbout: () -> Unit,
+    onExit: () -> Unit,
+    onWellness: () -> Unit
+) {
     PageFrame {
         Text("SAE", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = SaeNavy)
         Spacer(Modifier.height(13.dp))
@@ -42,6 +47,44 @@ fun DashboardScreen(onCalendar: () -> Unit, onAbout: () -> Unit, onExit: () -> U
             Spacer(Modifier.height(14.dp))
             Button(onClick = onCalendar) { Text("Ver calendario") }
         }
+
+        Spacer(Modifier.height(22.dp))
+
+        Text(
+            "Bienestar estudiantil",
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = SaeNavy
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SaePanel(Modifier.fillMaxWidth()) {
+
+            Text(
+                "Cuida de tu bienestar",
+                fontWeight = FontWeight.Bold,
+                color = SaeNavy
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            Text(
+                "Registra tu estado de ánimo, nivel de estrés, horas de sueño y carga académica.",
+                color = SaeMuted,
+                fontSize = 13.sp
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            Button(
+                onClick = onWellness,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Acceder a mi bienestar")
+            }
+        }
+
         Spacer(Modifier.height(18.dp))
     }
 }

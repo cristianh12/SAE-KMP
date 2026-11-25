@@ -9,6 +9,7 @@ enum class SaeScreen {
     SUBJECTS,
     CALENDAR,
     RESOURCES,
+    WELLNESS,
     PROFILE,
     ABOUT
 }

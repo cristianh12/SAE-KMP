@@ -117,7 +117,11 @@ fun SaeNavigationHost() {
 
     BoxWithConstraints(Modifier.fillMaxSize().background(SaeBackground)) {
         val isWide = maxWidth >= 840.dp
-        val currentTab = if (screen == SaeScreen.ABOUT) SaeScreen.PROFILE else screen
+        val currentTab = when (screen) {
+            SaeScreen.ABOUT -> SaeScreen.PROFILE
+            SaeScreen.WELLNESS -> SaeScreen.DASHBOARD
+            else -> screen
+        }
         if (isWide) {
             Row(Modifier.fillMaxSize()) {
                 Column(
@@ -142,6 +146,7 @@ fun SaeNavigationHost() {
                         perfil = perfilActual,
                         correo = authRepository.usuarioAutenticado()?.email,
                         onCalendar = { screen = SaeScreen.CALENDAR },
+                        onWellness = { screen = SaeScreen.WELLNESS },
                         onAbout = { screen = SaeScreen.ABOUT },
                         onBack = { screen = SaeScreen.PROFILE },
                         onExit = {
@@ -171,6 +176,7 @@ fun SaeNavigationHost() {
                         perfil = perfilActual,
                         correo = authRepository.usuarioAutenticado()?.email,
                         onCalendar = { screen = SaeScreen.CALENDAR },
+                        onWellness = { screen = SaeScreen.WELLNESS },
                         onAbout = { screen = SaeScreen.ABOUT },
                         onBack = { screen = SaeScreen.PROFILE },
                         onExit = {
@@ -239,18 +245,52 @@ private fun ScreenContent(
     onCalendar: () -> Unit,
     onAbout: () -> Unit,
     onBack: () -> Unit,
-    onExit: () -> Unit
+    onExit: () -> Unit,
+    onWellness: () -> Unit
 ) {
 
     when (screen) {
-        SaeScreen.DASHBOARD -> DashboardScreen(onCalendar, onAbout, onExit)
+        SaeScreen.DASHBOARD -> DashboardScreen(
+            onCalendar = onCalendar,
+            onAbout = onAbout,
+            onExit = onExit,
+            onWellness = onWellness
+        )
         SaeScreen.CALENDAR -> CalendarScreen(onBack)
         SaeScreen.SUBJECTS -> MateriasScreen(
             cliente = cliente,
             perfil = perfil
         )
-        SaeScreen.RESOURCES -> PendingSection("Biblioteca", "▥",
-            "Tu biblioteca está vacía. Los archivos y la búsqueda bibliográfica se integrarán con el módulo de Recursos.")
+        SaeScreen.RESOURCES -> {
+            val usuarioId = perfil?.id
+
+            if (usuarioId != null) {
+                BibliotecaScreen(
+                    usuarioId = usuarioId
+                )
+            } else {
+                PendingSection(
+                    "Biblioteca",
+                    "▥",
+                    "Debes iniciar sesión para acceder a tus recursos."
+                )
+            }
+        }
+        SaeScreen.WELLNESS -> {
+            val usuarioId = perfil?.id
+
+            if (usuarioId != null) {
+                BienestarScreen(
+                    usuarioId = usuarioId
+                )
+            } else {
+                PendingSection(
+                    "Mi bienestar",
+                    "♡",
+                    "Debes iniciar sesión para acceder a tu bienestar."
+                )
+            }
+        }
 
         SaeScreen.PROFILE -> ProfileSection(
             perfil = perfil,
